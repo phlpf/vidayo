@@ -4,18 +4,29 @@ import scene
 from os import listdir
 import os.path
 
+main_scene = None
+clock = pygame.time.Clock()
+
 def player_func(sc, screen, objects, frames, events):
-    if menu_func.is_first == True:
+    global main_scene, clock
+    if player_func.is_first == True:
         height = screen.get_height()-(screen.get_height()/5)
         normal_height = (screen.get_height()/30)*2
         sc.add_obj(normal_height, height, screen.get_width()/5, screen.get_height()/5, (255, 0, 0), "back")
-        menu_func.is_first = False
-    
-    
-player_func.frame = 0
-player_func.is_first = True
+        print("adssad")
+        player_func.is_first = False
+    frame_array = sc.frames[player_func.frame]
+    clock.tick(sc.framerate)
+    surf = pygame.surfarray.make_surface(frame_array)
+    surf = sc.adjust_frame(surf)
+    player_func.frame+=1
+    screen.blit(surf, (0, 0))
+    if sc.objects[0].check_hit(screen, events):
+        print("hit")
+        main_scene = menu
 
 def menu_func(sc, screen, objects, frames, events):
+    global main_scene
     if menu_func.is_first == True:
         normal_height = (screen.get_height()/30)*2
         sc.add_obj(normal_height, normal_height+5, screen.get_width()/5, normal_height, (255, 0, 0), "hello!")
@@ -29,10 +40,12 @@ def menu_func(sc, screen, objects, frames, events):
     for i in range(menu_func.video_start, len(sc.objects)):
         if sc.objects[i].check_hit(screen, events):
             filename = sc.objects[i].caption
+            player_func.is_first = True
+            player_func.frame = 0
             new_scene = scene.Scene(screen, player_func, sc.font)
             new_scene.load_video(filename)
-            sc = new_scene
-            
+            main_scene = new_scene
+                    
 menu_func.video_start = 0
 menu_func.is_first = True
 

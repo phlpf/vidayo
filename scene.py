@@ -1,5 +1,9 @@
 import pygame
 import imageio
+import cv2
+
+
+
 
 class Object:
     def __init__(self, x, y, w, h, color, caption):
@@ -31,11 +35,14 @@ class Scene:
         self.font = font
         self.objects = []
         self.frames = []
+        self.framerate = 0
     def add_obj(self, x, y, w, h, color, caption):
         self.objects.append(Object(x, y, w, h, color, caption))
     def load_video(self, filename):        
-        images = imageio.get_reader('test.mp4')
+        images = imageio.get_reader(filename)
         self.frames = [im for frame_num, im in enumerate(images)]
+        cap=cv2.VideoCapture(filename)
+        self.framerate = cap.get(cv2.CAP_PROP_FPS)
     def adjust_frame(self, surf):
         surf = pygame.transform.rotate(surf, 270)
         surf = pygame.transform.flip(surf, True, False)
@@ -44,5 +51,6 @@ class Scene:
         for obj in self.objects:
             obj.draw(self.screen, self.font)
     def main_loop(self, events):
+        self.screen.fill((0,0,0))    
         self.cb(self, self.screen, self.objects, self.frames, events)
         self.draw_objs();
