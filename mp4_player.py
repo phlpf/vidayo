@@ -10,17 +10,17 @@ clock = pygame.time.Clock()
 def player_func(sc, screen, objects, frames, events):
     global main_scene, clock
     if player_func.is_first == True:
-        height = screen.get_height()-(screen.get_height()/5)
+        height = screen.get_height()-(screen.get_height()/10)
         normal_height = (screen.get_height()/30)*2
-        sc.add_obj(normal_height, height, screen.get_width()/5, screen.get_height()/5, (255, 0, 0), "back")
+        sc.add_obj(normal_height, height, screen.get_width()/5, screen.get_height()/10, (255, 0, 0), "back")
         print("adssad")
         player_func.is_first = False
     frame_array = sc.frames[player_func.frame]
     clock.tick(sc.framerate)
     surf = pygame.surfarray.make_surface(frame_array)
-    surf = sc.adjust_frame(surf)
+    surf, x, y = sc.adjust_frame(surf)
     player_func.frame+=1
-    screen.blit(surf, (0, 0))
+    screen.blit(surf, (x, y ))
     if sc.objects[0].check_hit(screen, events):
         print("hit")
         main_scene = menu
@@ -35,7 +35,7 @@ def menu_func(sc, screen, objects, frames, events):
         menu_func.video_start = len(sc.objects)
         for f in onlyfiles:
             if f[-4:] == ".mp4":
-                sc.add_obj(normal_height, (normal_height+5)*(len(sc.objects)+1), len(f)*30, normal_height, (0, 255, 0), f)
+                sc.add_obj(normal_height, (normal_height+5)*(len(sc.objects)+1), 10+len(f)*15, normal_height, (0, 255, 0), f)
         menu_func.is_first = False
     for i in range(menu_func.video_start, len(sc.objects)):
         if sc.objects[i].check_hit(screen, events):
@@ -54,7 +54,9 @@ pygame.font.init() # you have to call this at the start,
                    # if you want to use this module.
 myfont = pygame.font.SysFont('Ubuntu Mono', 40)
 
-screen = pygame.display.set_mode([1500, 900])
+infoObject = pygame.display.Info()
+
+screen = pygame.display.set_mode([infoObject.current_w, infoObject.current_h])
 
 menu = scene.Scene(screen, menu_func, myfont)
 

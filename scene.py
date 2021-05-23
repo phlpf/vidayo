@@ -46,7 +46,19 @@ class Scene:
     def adjust_frame(self, surf):
         surf = pygame.transform.rotate(surf, 270)
         surf = pygame.transform.flip(surf, True, False)
-        return surf
+        current_height, current_width = surf.get_height(), surf.get_width()
+        factor_denom = current_width
+        factor_numer = self.screen.get_width()
+        if current_height/current_width > self.screen.get_height()/self.screen.get_width():
+            factor_denom = current_height
+            factor_numer = self.screen.get_height()
+            
+        factor = factor_numer/factor_denom
+        new_width = factor * current_width
+        new_height = factor * current_height
+        surf = pygame.transform.scale(surf, (int(new_width), int(new_height)))
+        x, y = int((self.screen.get_width()-new_width)/2), int((self.screen.get_height()-new_height)/2)
+        return (surf, x, y)
     def draw_objs(self):
         for obj in self.objects:
             obj.draw(self.screen, self.font)
